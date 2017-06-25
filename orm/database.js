@@ -8,7 +8,7 @@ const db = Symbol('db');
 export class Database {
 
   constructor(modelsList, database) {
-    if (db) {
+    if (database) {
       this[db] = database;
     }
     this[modelsMap] = {};
