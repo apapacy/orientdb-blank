@@ -5,7 +5,7 @@ export class User extends Model{
   static schema = {
     className: 'User',
     collection: 'Users',
-    properties: {
+    props: {
       name: {
         type: 'string',
         required: true

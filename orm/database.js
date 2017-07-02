@@ -25,6 +25,7 @@ export class Database {
   }
 
   async query(...args) {
+    console.log(args)
     return await this[db].query(...args);
   }
 
@@ -32,10 +33,25 @@ export class Database {
     if (!model || !model.schema || !model.schema.className) {
       throw new Error('"model.schema.className" not provided.');
     }
-    this[modelsMap][model.schema.className];
+    this[modelsMap][model.schema.className] = new model();
   }
 
   [build]() {
   }
 
+  async drop() {
+    await this.query(`alter database datetimeformat "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"`);
+    await this.query(`alter database dateformat "yyyy-MM-dd"`);
+    for (let modelName in this[modelsMap]) {
+      await this[modelsMap][modelName].drop(this);
+    }
+  }
+
+  async sync() {
+    await this.query(`alter database datetimeformat "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"`);
+    await this.query(`alter database dateformat "yyyy-MM-dd"`);
+    for (let modelName in this[modelsMap]) {
+      await this[modelsMap][modelName].sync(this);
+    }
+  }
 }

@@ -7,7 +7,7 @@ export default new Database({
   port: 2424,
   username: 'admin',
   password: 'admin',
-  dbname: 'GratefulDeadConcerts',
+  dbname: 'test',
   models: [
     User
   ]

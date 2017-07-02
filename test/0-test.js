@@ -15,13 +15,13 @@ describe('test environment', async () => {
     user.test();
   });
 
-  it('get database', async () => {
+  /*it('get database', async () => {
     const begin = (new Date).getTime();
-    const test = await db.query("select * from `test` where message lucene :lu limit 3");
+    const test = await db.query("select * from `test` where message lucene 'Харько~0.2' limit 3");
     console.log((new Date).getTime() - begin);
     console.log(test);
     const test1 = await db.query(
-      "select EXPAND(rid) from index:test.message1 where key lucene 'Харько~0.2' limit 3",
+      "select rid from index:test.message1 where key lucene :lu  limit 3",
     {
       params: {
         lu: 'Харько~0.3'
@@ -29,7 +29,11 @@ describe('test environment', async () => {
     });
     console.log(test1);
     return Promise.resolve();
-  });
+  });*/
 
+  it('drop database', async () => {
+    await db.drop();
+    await db.sync();
+  });
 
 });
