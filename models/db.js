@@ -1,6 +1,9 @@
 
 import {Database} from '../orm';
 import {User} from './User';
+import {Address} from './Address';
+import {City} from './City';
+
 
 export default new Database({
   host: 'localhost',
@@ -9,6 +12,8 @@ export default new Database({
   password: 'admin',
   dbname: 'test',
   models: [
-    User
+    User,
+    Address,
+    City
   ]
 });

@@ -43,7 +43,10 @@ export class Database {
     await this.query(`alter database datetimeformat "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"`);
     await this.query(`alter database dateformat "yyyy-MM-dd"`);
     for (let modelName in this[modelsMap]) {
-      await this[modelsMap][modelName].drop(this);
+      await this[modelsMap][modelName].dropClass(this);
+    }
+    for (let modelName in this[modelsMap]) {
+      await this[modelsMap][modelName].dropProperties(this);
     }
   }
 
@@ -51,7 +54,10 @@ export class Database {
     await this.query(`alter database datetimeformat "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"`);
     await this.query(`alter database dateformat "yyyy-MM-dd"`);
     for (let modelName in this[modelsMap]) {
-      await this[modelsMap][modelName].sync(this);
+      await this[modelsMap][modelName].syncClass(this);
+    }
+    for (let modelName in this[modelsMap]) {
+      await this[modelsMap][modelName].syncProperties(this);
     }
   }
 }

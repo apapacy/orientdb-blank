@@ -4,32 +4,64 @@ export class Model {
     console.log('test from model');
   }
 
-  async drop(db) {
+  async dropClass(db) {
     try {
-      await db.query(`drop class ${this.constructor.schema.collection} if exists;`);
-      await db.query(`create class ${this.constructor.schema.collection};`);
-      for (let propertyName in this.constructor.schema.props) {
-        await db.query(`create property ${this.constructor.schema.collection}.${propertyName} ${this.constructor.schema.props[propertyName].type}`);
-      }
-      await db.query(`create property ${this.constructor.schema.collection}.createdAt datetime`);
-      await db.query(`create property ${this.constructor.schema.collection}.updatedAt datetime`);
+      await db.query(`drop class ${this.constructor.schema.className} if exists;`);
+      await db.query(`create class ${this.constructor.schema.className};`);
       await db.query(`alter class ${this.constructor.schema.collection} strictmode true`);
     } catch (ex) {
       console.log(ex);
     }
   }
 
-  async sync(db) {
+  async dropProperties(db) {
     try {
-      await db.query(`create class ${this.constructor.schema.collection} if not exists;`);
-      for (let propertyName in this.constructor.schema.props) {
-        await db.query(`create property ${this.constructor.schema.collection}.${propertyName} if not exists ${this.constructor.schema.props[propertyName].type}`);
+      for (let propertyName in this.constructor.schema.properties) {
+        await db.query(generateProperty(this.constructor.schema, propertyName, false));
       }
-      await db.query(`create property ${this.constructor.schema.collection}.createdAt if not exists datetime`);
-      await db.query(`create property ${this.constructor.schema.collection}.updatedAt if not exists datetime`);
-      await db.query(`alter class ${this.constructor.schema.collection} strictmode true`);
+      await db.query(`create property ${this.constructor.schema.className}.createdAt datetime`);
+      await db.query(`create property ${this.constructor.schema.className}.updatedAt datetime`);
     } catch (ex) {
       console.log(ex);
     }
   }
+
+  async syncClass(db) {
+    try {
+      await db.query(`create class ${this.constructor.schema.className} if not exists;`);
+      await db.query(`alter class ${this.constructor.schema.className} strictmode true`);
+    } catch (ex) {
+      console.log(ex);
+    }
+  }
+
+  async syncProperties(db) {
+    try {
+      for (let propertyName in this.constructor.schema.properties) {
+        await db.query(generateProperty(this.constructor.schema, propertyName, true));
+      }
+      await db.query(`create property ${this.constructor.schema.className}.createdAt if not exists datetime`);
+      await db.query(`create property ${this.constructor.schema.className}.updatedAt if not exists datetime`);
+    } catch (ex) {
+      console.log(ex);
+    }
+  }
+
+}
+
+function generateProperty(schema, propertyName, soft) {
+  const property = schema.properties[propertyName];
+  const notexists = soft ? 'if not exists' : '';
+  let type;
+  if (['link', 'list', 'map', 'set'].indexOf(property.type) !== -1) {
+    let postfix = property.type === 'link' ? '' : property.type;
+    if (property.embedded) {
+      type = `embedded${postfix} ${property.className}`;
+    } else {
+      type = `link${postfix} ${property.className}`;
+    }
+  } else {
+    type = property.type;
+  }
+  return `create property ${schema.className}.${propertyName} ${notexists} ${type}`;
 }

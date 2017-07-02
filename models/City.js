@@ -1,16 +1,12 @@
 import {Model} from '../orm';
 
-export class User extends Model{
+export class City extends Model{
 
   static schema = {
-    className: 'User',
+    className: 'City',
     properties: {
       name: {
         type: 'string',
-        required: true
-      },
-      birthday: {
-        type: 'date',
         required: true
       }
     }
