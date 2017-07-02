@@ -8,7 +8,11 @@ export class Model {
     try {
       await db.query(`drop class ${this.constructor.schema.className} if exists;`);
       await db.query(`create class ${this.constructor.schema.className};`);
-      await db.query(`alter class ${this.constructor.schema.collection} strictmode true`);
+      await db.query(`alter class ${this.constructor.schema.collection} strictmode true;`);
+      await db.query(`drop sequence ${this.constructor.schema.className};`);
+      await db.query(`create sequence ${this.constructor.schema.className} type ordered;`);
+      await db.query(`create property ${this.constructor.schema.className}.id long`);
+      await db.query(`alter property ${this.constructor.schema.className}.id default "sequence('${this.constructor.schema.className}').next()"`);
     } catch (ex) {
       console.log(ex);
     }

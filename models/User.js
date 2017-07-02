@@ -12,6 +12,10 @@ export class User extends Model{
       birthday: {
         type: 'date',
         required: true
+      },
+      address: {
+        type: 'set',
+        className: 'Address'
       }
     }
   }
