@@ -1,4 +1,6 @@
 // select name, out('family') as family from parent  where family.name = 'Max1' fetchplan *:1
+// select expand(indexes) from metadata:indexmanager
+// SELECT from (select expand(classes) from metadata:schema) where "V" in superClasses or "E"  in superClasses
 export class Model {
   test() {
     console.log('test from model');
@@ -77,20 +79,26 @@ function generateProperty(schema, propertyName, soft) {
       type = `link${postfix} ${property.className}`;
     }
   } else if (property.type === 'text') {
-    return [`create property ${schema.className}.${propertyName} ${notexists} string;`,
+    return [
+      `create property ${schema.className}.${propertyName} ${notexists} string;`,
       `create index ${schema.className}.${propertyName}
         on ${schema.className}(${propertyName}) fulltext engine lucene metadata {
           "analyzer": "org.apache.lucene.analysis.ru.RussianAnalyzer"
-        };`];
+        };`
+      ];
   } else if (property.type === 'autoincrement') {
-    return [`drop sequence ${schema.className}_${propertyName}`,
+    return [
+      `drop sequence ${schema.className}_${propertyName}`,
       `create sequence ${schema.className}_${propertyName} type ordered;`,
       `create property ${schema.className}.${propertyName} ${notexists} long;`,
       `alter property ${schema.className}.${propertyName}
          default "sequence('${schema.className}_${propertyName}').next()";`,
-      `alter property ${schema.className}.${propertyName} readonly true;`];
+      `alter property ${schema.className}.${propertyName} readonly true;`
+    ];
   } else if (property.type === 'edge') {
-    return [`create class ${propertyName} ${notexists} extends E;`,
+    return [
+      `create class ${propertyName} ${notexists} extends E;`,
+      `alter class ${propertyName} strictmode true;`,
       `create property ${propertyName}.out ${notexists} link ${schema.className};`,
       `create property ${propertyName}.in ${notexists} link ${property.to};`,
       `create index ${propertyName}.unique on ${propertyName}(out, in) unique;`

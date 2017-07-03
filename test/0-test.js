@@ -33,7 +33,7 @@ describe('test environment', async () => {
 
   it('drop database', async () => {
     await db.drop();
-    await db.sync();
+    //await db.sync();
   });
 
   it('test data', async () => {
