@@ -19,6 +19,13 @@ export class User extends Model{
       address: {
         type: 'set',
         className: 'Address'
+      },
+      bio: {
+        type: 'text'
+      },
+      family: {
+        type: 'edge',
+        to: 'User'
       }
     }
   }
