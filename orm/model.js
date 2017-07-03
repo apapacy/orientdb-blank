@@ -8,11 +8,8 @@ export class Model {
     try {
       await db.query(`drop class ${this.constructor.schema.className} if exists;`);
       await db.query(`create class ${this.constructor.schema.className};`);
-      await db.query(`alter class ${this.constructor.schema.collection} strictmode true;`);
+      await db.query(`alter class ${this.constructor.schema.className} strictmode true;`);
       await db.query(`drop sequence ${this.constructor.schema.className};`);
-      await db.query(`create sequence ${this.constructor.schema.className} type ordered;`);
-      await db.query(`create property ${this.constructor.schema.className}.id long`);
-      await db.query(`alter property ${this.constructor.schema.className}.id default "sequence('${this.constructor.schema.className}').next()"`);
     } catch (ex) {
       console.log(ex);
     }
@@ -21,7 +18,10 @@ export class Model {
   async dropProperties(db) {
     try {
       for (let propertyName in this.constructor.schema.properties) {
-        await db.query(generateProperty(this.constructor.schema, propertyName, false));
+        let commands = generateProperty(this.constructor.schema, propertyName, false);
+        for (let i = 0; i < commands.length; i++ ) {
+          await db.query(commands[i]);
+        }
       }
       await db.query(`create property ${this.constructor.schema.className}.createdAt datetime`);
       await db.query(`create property ${this.constructor.schema.className}.updatedAt datetime`);
@@ -42,7 +42,10 @@ export class Model {
   async syncProperties(db) {
     try {
       for (let propertyName in this.constructor.schema.properties) {
-        await db.query(generateProperty(this.constructor.schema, propertyName, true));
+        let commands = generateProperty(this.constructor.schema, propertyName, true);
+        for (let i = 0; i < commands.length; i++) {
+          await db.query(commands[i]);
+        }
       }
       await db.query(`create property ${this.constructor.schema.className}.createdAt if not exists datetime`);
       await db.query(`create property ${this.constructor.schema.className}.updatedAt if not exists datetime`);
@@ -64,8 +67,15 @@ function generateProperty(schema, propertyName, soft) {
     } else {
       type = `link${postfix} ${property.className}`;
     }
+  } else if (property.type === 'autoincrement') {
+    return [`drop sequence ${schema.className}_${propertyName}`,
+      `create sequence ${schema.className}_${propertyName} type ordered`,
+      `create property ${schema.className}.${propertyName} ${notexists} long`,
+      `alter property ${schema.className}.${propertyName}
+         default "sequence('${schema.className}_${propertyName}').next()"`,
+      `alter property ${schema.className}.${propertyName} readonly true`];
   } else {
     type = property.type;
   }
-  return `create property ${schema.className}.${propertyName} ${notexists} ${type}`;
+  return [`create property ${schema.className}.${propertyName} ${notexists} ${type}`];
 }

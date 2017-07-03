@@ -5,6 +5,9 @@ export class User extends Model{
   static schema = {
     className: 'User',
     properties: {
+      id: {
+        type: 'autoincrement'
+      },
       name: {
         type: 'string',
         required: true

@@ -29,6 +29,11 @@ export class Database {
     return await this[db].query(...args);
   }
 
+  async execute(...args) {
+    console.log(args)
+    return await this[db].exec(...args);
+  }
+
   [registerModel](model) {
     if (!model || !model.schema || !model.schema.className) {
       throw new Error('"model.schema.className" not provided.');
