@@ -36,4 +36,10 @@ describe('test environment', async () => {
     await db.sync();
   });
 
+  it('test data', async () => {
+    const city = await db.query(`insert into City set name='Харьков'`);
+    const address = await db.query(`insert into Address set city={name: 'Луга'}`);
+    await db.query(`insert into User set name='Joe', address=${address.rid}`);
+  });
+
 });

@@ -7,7 +7,7 @@ export class Address extends Model{
     properties: {
       city: {
         type: 'link',
-        embedded: false,
+        embedded: true,
         className: 'City',
         required: true
       },
