@@ -1,4 +1,4 @@
-
+// select name, out('family') as family from parent  where family.name = 'Max1' fetchplan *:1
 export class Model {
   test() {
     console.log('test from model');

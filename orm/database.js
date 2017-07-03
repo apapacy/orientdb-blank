@@ -47,6 +47,7 @@ export class Database {
   async drop() {
     await this.query(`alter database datetimeformat "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"`);
     await this.query(`alter database dateformat "yyyy-MM-dd"`);
+    await this.query(`alter database timezone 'Ukraine/Kiev'`);
     for (let modelName in this[modelsMap]) {
       await this[modelsMap][modelName].dropClass(this);
     }
@@ -58,6 +59,7 @@ export class Database {
   async sync() {
     await this.query(`alter database datetimeformat "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"`);
     await this.query(`alter database dateformat "yyyy-MM-dd"`);
+    await this.query(`alter database timezone 'Ukraine/Kiev'`);
     for (let modelName in this[modelsMap]) {
       await this[modelsMap][modelName].syncClass(this);
     }
